@@ -4,6 +4,7 @@ oversimplified simulation of magnetic field lines of a magnet (in the future i'l
 - moving magnet: [W,A,S,D]
 - increasing magnet strength: [1]
 - decreasing magnet strength: [2]
+- change magnet poles: [Q]
 
 **changelog**:
 
@@ -13,5 +14,8 @@ oversimplified simulation of magnetic field lines of a magnet (in the future i'l
 08.03.23:
 - removed the 2nd magnet, now working on only 1 magnet
 
-12.03.23:
+12.03.23#1:
 - reworked the magnetic field
+
+12.03.23#2:
+- working on particles =o
