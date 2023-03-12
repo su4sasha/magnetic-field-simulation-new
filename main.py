@@ -2,6 +2,7 @@ import time
 import math
 import pygame
 import scipy.integrate as integrate
+from particles import Particle
 
 
 pygame.init()
