@@ -1,4 +1,4 @@
-oversimplified simulation of magnetic field lines of a magnet (in the future i'll work a bit more on that project)
+oversimplified simulation of magnetic field lines of a magnet (in the future I'll work a bit more on that project)
 
 **controls**:
 - moving magnet: [W,A,S,D]
@@ -9,7 +9,7 @@ oversimplified simulation of magnetic field lines of a magnet (in the future i'l
 **changelog**:
 
 05.03.23:
-- added the simpliest gravitation simulation (activate with [Q], disabled by default)
+- added the simplest gravitation simulation (activate with [Q], disabled by default)
 
 08.03.23:
 - removed the 2nd magnet, now working on only 1 magnet

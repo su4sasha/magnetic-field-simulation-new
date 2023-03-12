@@ -1,5 +1,6 @@
 import time
 import math
+import numpy
 import pygame
 import scipy.integrate as integrate
 from particles import Particle
@@ -20,64 +21,101 @@ magnet_data = {
     "magnetic_lines_direction": "up-down"
 }
 
-particle_generator = Particle([0, 0], 0, "", 0, False)
+particle_generated = Particle([0, 0], 0, "", "", (1.6 * 10 ** -19), False)
 
 if __name__ == '__main__':
-    try:
-        running = True
-        while running:
+    running = True
+    while running:
 
-            # drawing the magnet and the magnetic field
-            screen.fill((255, 255, 255))
-            text_surface = my_font.render(f'magnet strength (induction): {round(magnet_data["strength"], 2)}', False, (0, 0, 0))
-            screen.blit(text_surface, (0, 0))
-            if magnet_data["magnetic_lines_direction"] == "up-down":
-                text_surface = my_font.render(f'magnet pole the viewer sees: N', False, (0, 0, 0))
+        # drawing the magnet and the magnetic field
+        screen.fill((255, 255, 255))
+        text_surface = my_font.render(f'magnet strength (induction): {round(magnet_data["strength"], 2)}', False, (0, 0, 0))
+        screen.blit(text_surface, (0, 0))
+        if magnet_data["magnetic_lines_direction"] == "up-down":
+            text_surface = my_font.render(f'magnet pole the viewer sees: N', False, (0, 0, 0))
+        else:
+            text_surface = my_font.render(f'magnet pole the viewer sees: S', False, (0, 0, 0))
+        screen.blit(text_surface, (0, 50))
+        pygame.draw.rect(screen, (0, 0, 0), (magnet_data["coords"][0] - magnet_standart / 2, magnet_data["coords"][1] - magnet_standart / 2, magnet_standart, magnet_standart))
+        param = integrate.quad(lambda x: magnet_data["strength"] * standart, 0, magnet_data["strength"])[0]
+        for i in range(0, width, 5):
+            for j in range(0, height, 5):
+                if math.sqrt((i - magnet_data["coords"][0]) ** 2 + (j - magnet_data["coords"][1]) ** 2) < param:
+                    if magnet_data["magnetic_lines_direction"] == "up-down":
+                        pygame.draw.circle(screen, (0, 0, 255), (i, j), 1)
+                    else:
+                        pygame.draw.circle(screen, (255, 0, 0), (i, j), 1)
+
+        # drawing the particle
+        if particle_generated.particle_data["is_seen_on_screen"]:
+            if particle_generated.particle_data["charge_sign"] == "+":
+                pygame.draw.circle(screen, (255, 0, 0), (particle_generated.particle_data["coords"][0], particle_generated.particle_data["coords"][1]), 5)
             else:
-                text_surface = my_font.render(f'magnet pole the viewer sees: S', False, (0, 0, 0))
-            screen.blit(text_surface, (0, 50))
-            pygame.draw.rect(screen, (0, 0, 0), (magnet_data["coords"][0] - magnet_standart / 2, magnet_data["coords"][1] - magnet_standart / 2, magnet_standart, magnet_standart))
-            param = integrate.quad(lambda x: magnet_data["strength"] * standart, 0, magnet_data["strength"])[0]
-            for i in range(0, width, 5):
-                for j in range(0, height, 5):
-                    if math.sqrt((i - magnet_data["coords"][0]) ** 2 + (j - magnet_data["coords"][1]) ** 2) < param:
-                        if magnet_data["magnetic_lines_direction"] == "up-down":
-                            pygame.draw.circle(screen, (0, 0, 255), (i, j), 1)
-                        else:
-                            pygame.draw.circle(screen, (255, 0, 0), (i, j), 1)
+                pygame.draw.circle(screen, (0, 0, 255), (particle_generated.particle_data["coords"][0], particle_generated.particle_data["coords"][1]), 5)
 
-            # controls
-            keys = pygame.key.get_pressed()
+        # removing the particle if it's off-screen
+        if particle_generated.particle_data["coords"][0] > width or particle_generated.particle_data["coords"][0] < 0 or particle_generated.particle_data["coords"][1] > height or particle_generated.particle_data["coords"][1] < 0:
+            particle_generated.particle_data["is_seen_on_screen"] = False
 
-            if keys[pygame.K_w] and magnet_data["coords"][1] > 0 + magnet_standart / 2:
-                magnet_data["coords"][1] -= magnet_data["moving_speed"]
-            if keys[pygame.K_s] and magnet_data["coords"][1] < height - magnet_standart / 2:
-                magnet_data["coords"][1] += magnet_data["moving_speed"]
-            if keys[pygame.K_d] and magnet_data["coords"][0] < width - magnet_standart / 2:
-                magnet_data["coords"][0] += magnet_data["moving_speed"]
-            if keys[pygame.K_a] and magnet_data["coords"][0] > 0 + magnet_standart / 2:
-                magnet_data["coords"][0] -= magnet_data["moving_speed"]
+        # particle movement
+        if particle_generated.particle_data["is_seen_on_screen"]:
+            if particle_generated.particle_data["speed_direction"] == "+X +Y":
+                particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"]
+                particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"]
+            elif particle_generated.particle_data["speed_direction"] == "-X +Y":
+                particle_generated.particle_data["coords"][0] -= particle_generated.particle_data["speed"]
+                particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"]
+            elif particle_generated.particle_data["speed_direction"] == "-X -Y":
+                particle_generated.particle_data["coords"][0] -= particle_generated.particle_data["speed"]
+                particle_generated.particle_data["coords"][1] -= particle_generated.particle_data["speed"]
+            elif particle_generated.particle_data["speed_direction"] == "+X -Y":
+                particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"]
+                particle_generated.particle_data["coords"][1] -= particle_generated.particle_data["speed"]
 
-            if keys[pygame.K_1]:
-                magnet_data["strength"] += 0.01
-                time.sleep(0.1)
-            if keys[pygame.K_2]:
-                magnet_data["strength"] = magnet_data["strength"] - 0.01 if magnet_data["strength"] > 0.35 else magnet_data["strength"]
-                time.sleep(0.1)
+        # controls
+        keys = pygame.key.get_pressed()
 
-            if keys[pygame.K_q]:
-                magnet_data["magnetic_lines_direction"] = "up-down" if magnet_data["magnetic_lines_direction"] == "down-up" else "down-up"
-                time.sleep(0.1)
+        if keys[pygame.K_w] and magnet_data["coords"][1] > 0 + magnet_standart / 2:
+            magnet_data["coords"][1] -= magnet_data["moving_speed"]
+        if keys[pygame.K_s] and magnet_data["coords"][1] < height - magnet_standart / 2:
+            magnet_data["coords"][1] += magnet_data["moving_speed"]
+        if keys[pygame.K_d] and magnet_data["coords"][0] < width - magnet_standart / 2:
+            magnet_data["coords"][0] += magnet_data["moving_speed"]
+        if keys[pygame.K_a] and magnet_data["coords"][0] > 0 + magnet_standart / 2:
+            magnet_data["coords"][0] -= magnet_data["moving_speed"]
 
-            pygame.display.update()
+        if keys[pygame.K_1]:
+            magnet_data["strength"] += 0.01
+            time.sleep(0.2)
+        if keys[pygame.K_2]:
+            magnet_data["strength"] = magnet_data["strength"] - 0.01 if magnet_data["strength"] > 0.35 else magnet_data["strength"]
+            time.sleep(0.2)
 
-            for event in pygame.event.get():
+        if keys[pygame.K_q]:
+            magnet_data["magnetic_lines_direction"] = "up-down" if magnet_data["magnetic_lines_direction"] == "down-up" else "down-up"
+            time.sleep(0.2)
 
-                if event.type == pygame.QUIT:
-                    running = False
-                    pygame.quit()
-                    exit(0)
+        if keys[pygame.K_EQUALS]:
+            if not particle_generated.particle_data["is_seen_on_screen"]:
+                particle_generated.particle_data["coords"] = [0, 0]
+                particle_generated.particle_data["charge_sign"] = "+"
+                particle_generated.particle_data["is_seen_on_screen"] = True
+                particle_generated.particle_data["speed_direction"] = "+X +Y"
+                particle_generated.particle_data["speed"] = 0.5
 
-    except Exception as e:
-        print(f"unknown error occurred: {e}")
-        exit(0)
+        if keys[pygame.K_MINUS]:
+            if not particle_generated.particle_data["is_seen_on_screen"]:
+                particle_generated.particle_data["coords"] = [0, 0]
+                particle_generated.particle_data["charge_sign"] = "-"
+                particle_generated.particle_data["is_seen_on_screen"] = True
+                particle_generated.particle_data["speed_direction"] = "+X +Y"
+                particle_generated.particle_data["speed"] = 0.5
+
+        pygame.display.update()
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                exit(0)
