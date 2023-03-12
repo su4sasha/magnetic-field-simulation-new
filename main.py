@@ -20,7 +20,7 @@ magnet_data = {
     "magnetic_lines_direction": "up-down"
 }
 
-particles = [Particle([0, 0], 0.1, None, (1.6 * (10 ** -19)), False) for _ in range(100)]
+particle_generator = Particle([0, 0], 0, "", 0, False)
 
 if __name__ == '__main__':
     try:
@@ -31,12 +31,20 @@ if __name__ == '__main__':
             screen.fill((255, 255, 255))
             text_surface = my_font.render(f'magnet strength (induction): {round(magnet_data["strength"], 2)}', False, (0, 0, 0))
             screen.blit(text_surface, (0, 0))
+            if magnet_data["magnetic_lines_direction"] == "up-down":
+                text_surface = my_font.render(f'magnet pole the viewer sees: N', False, (0, 0, 0))
+            else:
+                text_surface = my_font.render(f'magnet pole the viewer sees: S', False, (0, 0, 0))
+            screen.blit(text_surface, (0, 50))
             pygame.draw.rect(screen, (0, 0, 0), (magnet_data["coords"][0] - magnet_standart / 2, magnet_data["coords"][1] - magnet_standart / 2, magnet_standart, magnet_standart))
             param = integrate.quad(lambda x: magnet_data["strength"] * standart, 0, magnet_data["strength"])[0]
             for i in range(0, width, 5):
                 for j in range(0, height, 5):
                     if math.sqrt((i - magnet_data["coords"][0]) ** 2 + (j - magnet_data["coords"][1]) ** 2) < param:
-                        pygame.draw.circle(screen, (0, 255, 0), (i, j), 1)
+                        if magnet_data["magnetic_lines_direction"] == "up-down":
+                            pygame.draw.circle(screen, (0, 0, 255), (i, j), 1)
+                        else:
+                            pygame.draw.circle(screen, (255, 0, 0), (i, j), 1)
 
             # controls
             keys = pygame.key.get_pressed()
@@ -55,6 +63,10 @@ if __name__ == '__main__':
                 time.sleep(0.1)
             if keys[pygame.K_2]:
                 magnet_data["strength"] = magnet_data["strength"] - 0.01 if magnet_data["strength"] > 0.35 else magnet_data["strength"]
+                time.sleep(0.1)
+
+            if keys[pygame.K_q]:
+                magnet_data["magnetic_lines_direction"] = "up-down" if magnet_data["magnetic_lines_direction"] == "down-up" else "down-up"
                 time.sleep(0.1)
 
             pygame.display.update()
