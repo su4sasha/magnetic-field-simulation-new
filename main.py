@@ -20,6 +20,8 @@ magnet_data = {
     "magnetic_lines_direction": "up-down"
 }
 
+particles = [Particle([0, 0], 0.1, None, (1.6 * (10 ** -19)), False) for _ in range(100)]
+
 if __name__ == '__main__':
     try:
         running = True
