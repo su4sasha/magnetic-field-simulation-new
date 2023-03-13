@@ -20,7 +20,7 @@ magnet_data = {
     "magnetic_lines_direction": "up-down"
 }
 
-particle_generated = Particle([0, 0], 0, "", "", (1.6 * 10 ** -19), (92 * 10 ** -8),False)
+particle_generated = Particle([0, 0], 0, "", "", (1.6 * 10 ** -19), (92 * 10 ** -8), False)
 
 if __name__ == '__main__':
     running = True
