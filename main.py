@@ -1,6 +1,5 @@
 import time
 import math
-import numpy
 import pygame
 import scipy.integrate as integrate
 from particles import Particle
@@ -16,12 +15,12 @@ my_font = pygame.font.SysFont('Comic Sans MS', 30)
 magnet_standart = 25
 magnet_data = {
     "coords": [375, 375],
-    "moving_speed": 0.3,
+    "moving_speed": 0.4,
     "strength": 0.44,  # strength parameter must be greater or equal to 0.35
     "magnetic_lines_direction": "up-down"
 }
 
-particle_generated = Particle([0, 0], 0, "", "", (1.6 * 10 ** -19), False)
+particle_generated = Particle([0, 0], 0, "", "", (1.6 * 10 ** -19), (92 * 10 ** -8),False)
 
 if __name__ == '__main__':
     running = True
@@ -71,7 +70,16 @@ if __name__ == '__main__':
             elif particle_generated.particle_data["speed_direction"] == "+X -Y":
                 particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"]
                 particle_generated.particle_data["coords"][1] -= particle_generated.particle_data["speed"]
+            elif particle_generated.particle_data["speed_direction"] == "+X":
+                particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"]
+            elif particle_generated.particle_data["speed_direction"] == "-X":
+                particle_generated.particle_data["coords"][0] -= particle_generated.particle_data["speed"]
+            elif particle_generated.particle_data["speed_direction"] == "+Y":
+                particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"]
+            elif particle_generated.particle_data["speed_direction"] == "-Y":
+                particle_generated.particle_data["coords"][1] -= particle_generated.particle_data["speed"]
 
+# currently I'm working on the particle movement in the magnetic field. I'll talk about that with my physics, maths and IT teachers some time later.
         # controls
         keys = pygame.key.get_pressed()
 
