@@ -21,3 +21,6 @@ oversimplified simulation of magnetic field lines of a magnet (in the future I'l
 
 12.03.23#3:
 - trying to make the magnet-particle system work
+
+14.03.23:
+- reworked particle's movement in the magnetic field and kinda made it work
