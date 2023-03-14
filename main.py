@@ -20,7 +20,7 @@ magnet_data = {
     "magnetic_lines_direction": "up-down"
 }
 
-particle_generated = Particle([0, 0], 0, "", "", (1.6 * 10 ** -19), (92 * 10 ** -8), False)
+particle_generated = Particle([0, 0], 0, 0.0, "", (1.6 * 10 ** -19), (92 * 10 ** -8), False)
 
 if __name__ == '__main__':
     running = True
@@ -56,30 +56,24 @@ if __name__ == '__main__':
         if particle_generated.particle_data["coords"][0] > width or particle_generated.particle_data["coords"][0] < 0 or particle_generated.particle_data["coords"][1] > height or particle_generated.particle_data["coords"][1] < 0:
             particle_generated.particle_data["is_seen_on_screen"] = False
 
-        # particle movement
+        # particle movement. the particle moves along the vector which is particle_data["speed_direction"] radians from the positive x-axis
         if particle_generated.particle_data["is_seen_on_screen"]:
-            if particle_generated.particle_data["speed_direction"] == "+X +Y":
-                particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"]
-                particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"]
-            elif particle_generated.particle_data["speed_direction"] == "-X +Y":
-                particle_generated.particle_data["coords"][0] -= particle_generated.particle_data["speed"]
-                particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"]
-            elif particle_generated.particle_data["speed_direction"] == "-X -Y":
-                particle_generated.particle_data["coords"][0] -= particle_generated.particle_data["speed"]
-                particle_generated.particle_data["coords"][1] -= particle_generated.particle_data["speed"]
-            elif particle_generated.particle_data["speed_direction"] == "+X -Y":
-                particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"]
-                particle_generated.particle_data["coords"][1] -= particle_generated.particle_data["speed"]
-            elif particle_generated.particle_data["speed_direction"] == "+X":
-                particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"]
-            elif particle_generated.particle_data["speed_direction"] == "-X":
-                particle_generated.particle_data["coords"][0] -= particle_generated.particle_data["speed"]
-            elif particle_generated.particle_data["speed_direction"] == "+Y":
-                particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"]
-            elif particle_generated.particle_data["speed_direction"] == "-Y":
-                particle_generated.particle_data["coords"][1] -= particle_generated.particle_data["speed"]
+            particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"] * math.cos(particle_generated.particle_data["speed_direction"])
+            particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"] * math.sin(particle_generated.particle_data["speed_direction"])
 
-# currently I'm working on the particle movement in the magnetic field. I'll talk about that with my physics, maths and IT teachers some time later.
+        # changing the particle's speed direction if it's in the magnetic field
+        if math.sqrt((particle_generated.particle_data["coords"][0] - magnet_data["coords"][0]) ** 2 + (particle_generated.particle_data["coords"][1] - magnet_data["coords"][1]) ** 2) < param:
+            if magnet_data["magnetic_lines_direction"] == "up-down":
+                if particle_generated.particle_data["charge_sign"] == "+":
+                    particle_generated.particle_data["speed_direction"] -= 0.01
+                else:
+                    particle_generated.particle_data["speed_direction"] += 0.01
+            else:
+                if particle_generated.particle_data["charge_sign"] == "+":
+                    particle_generated.particle_data["speed_direction"] += 0.01
+                else:
+                    particle_generated.particle_data["speed_direction"] -= 0.01
+
         # controls
         keys = pygame.key.get_pressed()
 
@@ -108,7 +102,7 @@ if __name__ == '__main__':
                 particle_generated.particle_data["coords"] = [0, 0]
                 particle_generated.particle_data["charge_sign"] = "+"
                 particle_generated.particle_data["is_seen_on_screen"] = True
-                particle_generated.particle_data["speed_direction"] = "+X +Y"
+                particle_generated.particle_data["speed_direction"] = math.pi / 4
                 particle_generated.particle_data["speed"] = 0.5
 
         if keys[pygame.K_MINUS]:
@@ -116,7 +110,7 @@ if __name__ == '__main__':
                 particle_generated.particle_data["coords"] = [0, 0]
                 particle_generated.particle_data["charge_sign"] = "-"
                 particle_generated.particle_data["is_seen_on_screen"] = True
-                particle_generated.particle_data["speed_direction"] = "+X +Y"
+                particle_generated.particle_data["speed_direction"] = math.pi / 4
                 particle_generated.particle_data["speed"] = 0.5
 
         pygame.display.update()
