@@ -20,7 +20,7 @@ magnet_data = {
     "magnetic_lines_direction": "up-down"
 }
 
-particle_generated = Particle([0, 0], 0, 0.0, "", (1.6 * 10 ** -19), (92 * 10 ** -8), False)
+particle_generated = Particle([0, 0], 0, 0.0, "", (1.6 * 10 ** -19), (1.6 * 10 * -27), False)
 
 if __name__ == '__main__':
     running = True
@@ -58,22 +58,21 @@ if __name__ == '__main__':
 
         # particle movement. the particle moves along the vector which is particle_data["speed_direction"] radians from the positive x-axis
         if particle_generated.particle_data["is_seen_on_screen"]:
-            particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"] * math.cos(particle_generated.particle_data["speed_direction"])
-            particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"] * math.sin(particle_generated.particle_data["speed_direction"])
+            particle_generated.particle_data["coords"][0] += particle_generated.particle_data["speed"] * math.cos(math.radians(particle_generated.particle_data["speed_direction"]))
+            particle_generated.particle_data["coords"][1] += particle_generated.particle_data["speed"] * math.sin(math.radians(particle_generated.particle_data["speed_direction"]))
 
         # changing the particle's speed direction if it's in the magnetic field
         if math.sqrt((particle_generated.particle_data["coords"][0] - magnet_data["coords"][0]) ** 2 + (particle_generated.particle_data["coords"][1] - magnet_data["coords"][1]) ** 2) < param:
             if magnet_data["magnetic_lines_direction"] == "up-down":
                 if particle_generated.particle_data["charge_sign"] == "+":
-                    particle_generated.particle_data["speed_direction"] -= 0.01
+                    particle_generated.particle_data["speed_direction"] -= (particle_generated.particle_data["charge_value"] * magnet_data["strength"]) / particle_generated.particle_data["mass"] * 10 ** 21
                 else:
-                    particle_generated.particle_data["speed_direction"] += 0.01
+                    particle_generated.particle_data["speed_direction"] += (particle_generated.particle_data["charge_value"] * magnet_data["strength"]) / particle_generated.particle_data["mass"] * 10 ** 21
             else:
                 if particle_generated.particle_data["charge_sign"] == "+":
-                    particle_generated.particle_data["speed_direction"] += 0.01
+                    particle_generated.particle_data["speed_direction"] += (particle_generated.particle_data["charge_value"] * magnet_data["strength"]) / particle_generated.particle_data["mass"] * 10 ** 21
                 else:
-                    particle_generated.particle_data["speed_direction"] -= 0.01
-
+                    particle_generated.particle_data["speed_direction"] -= (particle_generated.particle_data["charge_value"] * magnet_data["strength"]) / particle_generated.particle_data["mass"] * 10 ** 21
         # controls
         keys = pygame.key.get_pressed()
 
@@ -102,7 +101,7 @@ if __name__ == '__main__':
                 particle_generated.particle_data["coords"] = [0, 0]
                 particle_generated.particle_data["charge_sign"] = "+"
                 particle_generated.particle_data["is_seen_on_screen"] = True
-                particle_generated.particle_data["speed_direction"] = math.pi / 4
+                particle_generated.particle_data["speed_direction"] = 45
                 particle_generated.particle_data["speed"] = 0.5
 
         if keys[pygame.K_MINUS]:
@@ -110,7 +109,7 @@ if __name__ == '__main__':
                 particle_generated.particle_data["coords"] = [0, 0]
                 particle_generated.particle_data["charge_sign"] = "-"
                 particle_generated.particle_data["is_seen_on_screen"] = True
-                particle_generated.particle_data["speed_direction"] = math.pi / 4
+                particle_generated.particle_data["speed_direction"] = 45
                 particle_generated.particle_data["speed"] = 0.5
 
         pygame.display.update()
