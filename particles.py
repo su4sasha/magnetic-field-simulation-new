@@ -3,7 +3,7 @@ class Particle:
         self.particle_data = {
             "coords": coords,
             "speed": speed,
-            "speed_direction": speed_direction,  # angle in radians from the positive x-axis to the particle's direction
+            "speed_direction": speed_direction,  # angle in degrees from the positive x-axis to the particle's direction
             "charge_sign": charge_sign,
             "charge_value": charge_value,
             "mass": mass,
